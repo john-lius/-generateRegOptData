@@ -3,6 +3,10 @@ package com.digihealth.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.digihealth.basedata.service.BaseDataService;
+import com.digihealth.basedata.service.GenRegOpt;
+import com.digihealth.basedata.state.BeidState;
+
 /**
  * 随机生成中文姓名，性别，Email，手机号，住址
  * 
@@ -115,10 +119,21 @@ public class RandomName {
 	}
 
 	public static void main(String[] args) {
-//		for (int i = 0; i < 100; i++) {
-//			System.out.println(getAddress());
-			// System.out.println(getEmailName(6,9));
-//		}
+		if (args != null && args.length > 0) {
+			if (Integer.parseInt(args[0]) > 50) {
+				System.out.println("生成的患者数不能超过50个！");
+				return;
+			}
+			String code = BaseDataService.getCurBasBusEntity().getCode();
+			GenRegOpt gen = new GenRegOpt();
+			if (BeidState.SYBX.equals(code) || BeidState.YXYY.equals(code) || BeidState.QNZZYYY.equals(code)) {
+				gen.insertSql(Integer.parseInt(args[0]), false);
+			}else if (BeidState.SYZXYY.equals(code) || BeidState.LLZYYY.equals(code) || BeidState.CSHTYY.equals(code) || BeidState.LYRM.equals(code)) {
+				gen.insertSql(Integer.parseInt(args[0]), true);
+			}
+		}else {
+			System.out.println("请传入参数....");
+		}
 	}
 
 }

@@ -20,15 +20,15 @@ public class createFile {
      * @param filecontent   文件内容
      * @return  是否创建成功，成功则返回true
      */
-    public static boolean createFile(String fileName,String filecontent){
-        Boolean bool = false;
+    public createFile(final String fileName,final String filecontent){
+//        Boolean bool = false;
         filenameTemp = path+fileName+".sql";//文件路径+名称+文件类型
         File file = new File(filenameTemp);
         try {
             //如果文件不存在，则创建新的文件
             if(!file.exists()){
                 file.createNewFile();
-                bool = true;
+//                bool = true;
                 System.out.println("脚本文件创建成功:"+filenameTemp);
                 //创建文件成功后，写入内容到文件里
                 writeFileContent(filenameTemp, filecontent);
@@ -36,7 +36,7 @@ public class createFile {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return bool;
+//        return bool;
     }
 
     /**
@@ -64,7 +64,8 @@ public class createFile {
             StringBuffer buffer = new StringBuffer();
             
             //文件原有内容
-            for(int i=0;(temp =br.readLine())!=null;i++){
+            for(@SuppressWarnings("unused")
+			int i=0;(temp =br.readLine())!=null;i++){
                 buffer.append(temp);
                 // 行与行之间的分隔符 相当于“\n”
                 buffer = buffer.append(System.getProperty("line.separator"));
@@ -119,10 +120,5 @@ public class createFile {
         }
         return bool;
     }
-
-	public static void main(String[] args) {
-        createFile(GenerateSequenceUtil.generateSequenceNo()+"myfile", "111");
-
-	}
 
 }
