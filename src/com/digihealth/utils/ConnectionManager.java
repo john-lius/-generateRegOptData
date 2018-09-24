@@ -11,7 +11,7 @@ public class ConnectionManager {
 	// private static Logger logger = LoggerFactory.getLogger(GenRegOpt.class);
 	private static ThreadLocal<Connection> connectionHolder = new ThreadLocal<Connection>();
 	private static String JDBC_SQLSERVER_DRIVER_CLASS = "com.mysql.jdbc.Driver";
-	private static String JDBC_SQLSERVER_URL = "jdbc:mysql://127.0.0.1:3306/ais_dev_3.1?useUnicode=true&characterEncoding=utf-8";
+	private static String JDBC_SQLSERVER_URL = "jdbc:mysql://127.0.0.1:3306/ais3.1_sybx?useUnicode=true&characterEncoding=utf-8";
 	private static String JDBC_SQLSERVER_USERNAME = "root";
 	private static String JDBC_SQLSERVER_PASSWORD = "";
 

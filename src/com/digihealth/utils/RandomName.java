@@ -118,18 +118,21 @@ public class RandomName {
 		return map;
 	}
 
-	public static void main(String[] args) {
-		if (args != null && args.length > 0) {
-			if (Integer.parseInt(args[0]) > 50) {
+	public static void main(String[] params) {
+		if (params != null && params.length > 0) {
+			int total = Integer.parseInt(params[0]);
+			String emergency = params[1];
+			System.out.println("emergency:" + emergency);
+			if (total > 50) {
 				System.out.println("生成的患者数不能超过50个！");
 				return;
 			}
 			String code = BaseDataService.getCurBasBusEntity().getCode();
 			GenRegOpt gen = new GenRegOpt();
 			if (BeidState.SYBX.equals(code) || BeidState.YXYY.equals(code) || BeidState.QNZZYYY.equals(code)) {
-				gen.insertSql(Integer.parseInt(args[0]), false);
+				gen.insertSql(total, emergency, false);
 			}else if (BeidState.SYZXYY.equals(code) || BeidState.LLZYYY.equals(code) || BeidState.CSHTYY.equals(code) || BeidState.LYRM.equals(code)) {
-				gen.insertSql(Integer.parseInt(args[0]), true);
+				gen.insertSql(total, emergency, true);
 			}
 		}else {
 			System.out.println("请传入参数....");

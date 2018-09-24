@@ -18,7 +18,9 @@ import com.digihealth.basedata.entity.BasDictItem;
 import com.digihealth.basedata.entity.BasOperDef;
 import com.digihealth.basedata.entity.BasOperationPeople;
 import com.digihealth.basedata.entity.BasRegion;
+import com.digihealth.basedata.entity.BasUser;
 import com.digihealth.basedata.sql.Sql;
+import com.digihealth.basedata.state.UserRoleState;
 import com.digihealth.utils.ConnectionManager;
 
 /**
@@ -390,6 +392,50 @@ public class BaseDataService {
 			}
 		} catch (Exception e) {
 			System.out.println("------searchAllTablesException------" + e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 根据角色编码查询用户信息
+	 * @return
+	 */
+	public static List<BasUser> searchBasUserList(String roleType) {
+		List<BasUser> list = new ArrayList<BasUser>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(Sql.SEARCHUSERBYUSERTYPE);
+			pstmt.setString(1, getCurBasBusEntity().getBeid());
+			pstmt.setString(2, roleType);
+			pstmt.setInt(3, 1);
+			pstmt.setInt(4, 0);
+            rs = pstmt.executeQuery();
+            if (null == rs) return null;
+            while (rs.next()) {
+            	BasUser entity = new BasUser();
+				entity.setUserName(rs.getString("userName"));
+				entity.setPassword(rs.getString("password"));
+				entity.setName(rs.getString("name"));
+				entity.setLocked(Integer.valueOf(rs.getString("locked")));
+				entity.setEnable(Integer.valueOf(rs.getString("enable")));
+				entity.setUserType(rs.getString("userType"));
+				entity.setProfessionalTitle(rs.getString("professionalTitle"));
+				entity.setExecutiveLevel(rs.getString("executiveLevel"));
+				entity.setPinYin(rs.getString("pinYin"));
+				entity.setBeid(rs.getString("beid"));
+				list.add(entity);
+			}
+		} catch (Exception e) {
+			System.out.println("------searchBasUserListException------" + e.getMessage());
 		} finally {
 			try {
 				ConnectionManager.close(conn, pstmt, rs);

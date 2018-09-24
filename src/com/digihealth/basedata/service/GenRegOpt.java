@@ -22,7 +22,9 @@ import com.digihealth.basedata.entity.BasOperDef;
 import com.digihealth.basedata.entity.BasOperationPeople;
 import com.digihealth.basedata.entity.BasRegOpt;
 import com.digihealth.basedata.entity.BasRegion;
+import com.digihealth.basedata.entity.BasUser;
 import com.digihealth.basedata.state.BeidState;
+import com.digihealth.basedata.state.UserRoleState;
 import com.digihealth.utils.ConnectionManager;
 import com.digihealth.utils.DateUtils;
 import com.digihealth.utils.GenerateSequenceUtil;
@@ -30,7 +32,7 @@ import com.digihealth.utils.RandomName;
 
 public class GenRegOpt {
 
-	public static String insertSql(int total, boolean createDocument) {
+	public static String insertSql(int total, String emergency, boolean createDocument) {
 		String sql = "";
 		String beid = BaseDataService.getCurBasBusEntity().getBeid();
 		String patientName = "";  //患者姓名
@@ -44,6 +46,12 @@ public class GenRegOpt {
 		List<BasDictItem> costTypes = BaseDataService.searchBasSysDictItemList("cost_type"); //患者基本信息-费用类型
 		List<BasDictItem> operatLevels = BaseDataService.searchBasSysDictItemList("operat_level"); //患者基本信息-手术等级
 
+		System.out.println("emergencyxxx:" + emergency);
+		if ("Y".equals(emergency)) {
+			createDocument = true;
+		}
+
+		System.out.println("createDocument:" + createDocument);
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -64,7 +72,9 @@ public class GenRegOpt {
 			String state = "01";
 			if (createDocument) {
 				state = "02";
+				if ("Y".equals(emergency)) state = "03";
 			}
+			System.out.println("state:" + state);
 			String designedOptCode = basOperdefs.get(random).getOperdefId();
 			String designedOptName = basOperdefs.get(random).getName();
 			String diagnosisCode = basDiagnosedefs.get(random).getDiagDefId();
@@ -112,9 +122,9 @@ public class GenRegOpt {
 			basRegOpt.setOperaDate(operaDate);
 			basRegOpt.setCreateUser("chengyong");
 			basRegOpt.setCreateTime(DateUtils.formatDateTime(new Date()));
-			basRegOpt.setCutLevel(Integer.getInteger(BaseDataService.getRandom(1, 4)));
+			basRegOpt.setCutLevel(Integer.valueOf(BaseDataService.getRandom(1, 4)));
 			basRegOpt.setOptLevel(optLevel);
-			basRegOpt.setEmergency(0);
+			basRegOpt.setEmergency(emergency == "Y" ? 1 : 0);
 			basRegOpt.setIsLocalAnaes(0);
 			basRegOpt.setDesignedAnaesMethodCode(designedAnaesMethodCode);
 			basRegOpt.setDesignedAnaesMethodName(designedAnaesMethodName);
@@ -130,6 +140,21 @@ public class GenRegOpt {
 			BasDispatch basDispatch = new BasDispatch();
 			basDispatch.setRegOptId(id);
 			basDispatch.setBeid(beid);
+			//如果是创建急诊手术,默认安排麻醉医生和护士;
+			if ("Y".equals(emergency)) {
+				List<BasUser> anaesDoc = BaseDataService.searchBasUserList(UserRoleState.ANAES_DIRECTOR);
+				int r6 = random1.nextInt(anaesDoc.size());
+				String anaesDocName = anaesDoc.get(r6).getUserName();
+				basDispatch.setAnesthetistId(anaesDocName);
+
+				List<BasUser> headNurse = BaseDataService.searchBasUserList(UserRoleState.HEAD_NURSE);
+				int r7 = random1.nextInt(headNurse.size());
+				String headNurseName = headNurse.get(r7).getUserName();
+				basDispatch.setCircunurseId1(headNurseName);
+				basDispatch.setOperRoomId("2");
+				basDispatch.setPcs("1");
+				basDispatch.setIsHold(0);
+			}
 			BasDispatchDao.insert(basDispatch);
 			if (createDocument) {
 				CreateDocument document = new CreateDocument();
@@ -146,20 +171,22 @@ public class GenRegOpt {
 		return sql;
 	}
 
-	public static void main(String[] args) {
-		if (args != null && args.length > 0) {
-//			createFile.createFile(GenerateSequenceUtil.generateSequenceNo(), insertSql(Integer.parseInt(args[0])));
-			if (Integer.parseInt(args[0]) > 50) {
+	public static void main(String[] params) {
+		if (params != null && params.length > 0) {
+			int total = Integer.parseInt(params[0]);
+			String emergency = params[1];
+			if (total > 50) {
 				System.out.println("生成的患者数不能超过50个！");
 				return;
 			}
 			String code = BaseDataService.getCurBasBusEntity().getCode();
 			if (BeidState.SYBX.equals(code) || BeidState.YXYY.equals(code) || BeidState.QNZZYYY.equals(code)) {
-				insertSql(Integer.parseInt(args[0]), false);
+				insertSql(total, emergency, false);
 			}else if (BeidState.SYZXYY.equals(code) || BeidState.LLZYYY.equals(code) || BeidState.CSHTYY.equals(code) || BeidState.LYRM.equals(code)) {
-				insertSql(Integer.parseInt(args[0]), true);
+				insertSql(total, emergency, true);
 			}
 		}else {
+			insertSql(1, "Y", false);
 			System.out.println("请传入参数....");
 		}
 	}

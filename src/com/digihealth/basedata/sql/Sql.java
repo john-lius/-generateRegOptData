@@ -39,6 +39,10 @@ public class Sql {
 	 */
 	public static final String SEARCHBASSYSDICTITEM = "select a.* from bas_sys_dict_item a where a.beid = ? and a.groupId = ? and a.enable = ? order by a.`order` ASC";
 	/**
+	 * 根据角色编码查询用户
+	 */
+	public static final String SEARCHUSERBYUSERTYPE = "select a.* from bas_user a where a.beid = ? and a.executiveLevel = ? and a.enable = ? and a.locked = ?";
+	/**
 	 * 新增患者基本信息
 	 */
 	public static final String INSERTBASREGOPT = "INSERT INTO bas_reg_opt (regOptId, NAME, sex, age, ageMon, ageDay, medicalType, hid, bed, height, weight, regionId, regionName, deptId, deptName, designedOptName, designedOptCode, diagnosisName, diagnosisCode, operaDate, createUser, createTime, cutLevel, optLevel, emergency, isLocalAnaes, designedAnaesMethodName, designedAnaesMethodCode, operatorId, operatorName, assistantId, assistantName, state, costsettlementState, beid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
