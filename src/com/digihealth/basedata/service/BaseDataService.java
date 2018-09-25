@@ -17,6 +17,7 @@ import com.digihealth.basedata.entity.BasDiagnosedef;
 import com.digihealth.basedata.entity.BasDictItem;
 import com.digihealth.basedata.entity.BasOperDef;
 import com.digihealth.basedata.entity.BasOperationPeople;
+import com.digihealth.basedata.entity.BasOperroom;
 import com.digihealth.basedata.entity.BasRegion;
 import com.digihealth.basedata.entity.BasUser;
 import com.digihealth.basedata.sql.Sql;
@@ -312,6 +313,50 @@ public class BaseDataService {
 			}
 		} catch (Exception e) {
 			System.out.println("------searchBasOperationPeopleListException------" + e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 获取手术室信息
+	 * @return
+	 */
+	public static List<BasOperroom> searchBasOperroomList(String operRoomId) {
+		List<BasOperroom> list = new ArrayList<BasOperroom>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(Sql.SEARCHBASOPERROOM);
+			pstmt.setString(1, getCurBasBusEntity().getBeid());
+			pstmt.setString(2, operRoomId);
+            rs = pstmt.executeQuery();
+            if (null == rs) return null;
+            while (rs.next()) {
+            	BasOperroom entity = new BasOperroom();
+				entity.setOperRoomId(rs.getString("operRoomId"));
+				if (StringUtils.isNotBlank(rs.getString("tableNum"))) {
+					entity.setTableNum(Integer.parseInt(rs.getString("tableNum")));
+				}
+				entity.setName(rs.getString("name"));
+				if (StringUtils.isNotBlank(rs.getString("enable"))) {
+					entity.setEnable(Integer.parseInt(rs.getString("enable")));
+				}
+				entity.setRoomType(rs.getString("roomType"));
+				entity.setOperLevel(rs.getString("operLevel"));
+				entity.setRoomCategory(rs.getString("roomCategory"));
+				entity.setBeid(rs.getString("beid"));
+				list.add(entity);
+			}
+		} catch (Exception e) {
+			System.out.println("------searchBasOperroomListException------" + e.getMessage());
 		} finally {
 			try {
 				ConnectionManager.close(conn, pstmt, rs);

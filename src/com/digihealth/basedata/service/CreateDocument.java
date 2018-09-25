@@ -126,6 +126,7 @@ public class CreateDocument {
 				preVisit.setDigestionHave(1);
 				preVisit.setEndocrineHave(1);
 				preVisit.setInfectiousHave(1);
+				preVisit.setProcessState("END");
 			}else if (BeidState.LLZYYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
 				preVisit.setAsaE("1");
 			}
@@ -159,6 +160,8 @@ public class CreateDocument {
 			accede.setProcessState("NO_END");
 			if (BeidState.LLZYYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
 				accede.setSelected("0,0,0,0,0,0,0,0,0,1,1,1,1,1,1");
+			} else if (BeidState.SYBX.equals(BaseDataService.getCurBasBusEntity().getCode())) {
+				accede.setProcessState("END");
 			}
 			DocAccedeDao dao = new DocAccedeDao();
 			dao.insert(accede);

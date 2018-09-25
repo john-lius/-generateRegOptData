@@ -86,7 +86,6 @@ public class BasRegOptDao {
 			pstmt.setString(33, entity.getState());
 			pstmt.setString(34, entity.getCostsettlementState());
 			pstmt.setString(35, entity.getBeid());
-			System.out.println("9999999:" + entity.getCutLevel());
 			pstmt.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("执行insert语句出现异常(BasRegOptDao)：" + e.getMessage());

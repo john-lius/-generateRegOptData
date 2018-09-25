@@ -20,10 +20,12 @@ import com.digihealth.basedata.entity.BasDictItem;
 import com.digihealth.basedata.entity.BasDispatch;
 import com.digihealth.basedata.entity.BasOperDef;
 import com.digihealth.basedata.entity.BasOperationPeople;
+import com.digihealth.basedata.entity.BasOperroom;
 import com.digihealth.basedata.entity.BasRegOpt;
 import com.digihealth.basedata.entity.BasRegion;
 import com.digihealth.basedata.entity.BasUser;
 import com.digihealth.basedata.state.BeidState;
+import com.digihealth.basedata.state.OperationState;
 import com.digihealth.basedata.state.UserRoleState;
 import com.digihealth.utils.ConnectionManager;
 import com.digihealth.utils.DateUtils;
@@ -32,7 +34,7 @@ import com.digihealth.utils.RandomName;
 
 public class GenRegOpt {
 
-	public static String insertSql(int total, String emergency, boolean createDocument) {
+	public static String insertSql(int total, String emergency, String dispatch, String operroomId, boolean createDocument) {
 		String sql = "";
 		String beid = BaseDataService.getCurBasBusEntity().getBeid();
 		String patientName = "";  //患者姓名
@@ -43,15 +45,18 @@ public class GenRegOpt {
 		List<BasOperationPeople> basOperationPeoples = BaseDataService.searchBasOperationPeopleList();
 		List<BasDept> basDepts = BaseDataService.searchBasDeptList();
 		List<BasRegion> basRegions = BaseDataService.searchBasRegionList();
+		List<BasDictItem> pacTypes = BaseDataService.searchBasSysDictItemList("pac_type"); //患者基本信息-台次
 		List<BasDictItem> costTypes = BaseDataService.searchBasSysDictItemList("cost_type"); //患者基本信息-费用类型
 		List<BasDictItem> operatLevels = BaseDataService.searchBasSysDictItemList("operat_level"); //患者基本信息-手术等级
 
-		System.out.println("emergencyxxx:" + emergency);
-		if ("Y".equals(emergency)) {
+		emergency = emergency.toUpperCase();
+		dispatch = dispatch.toUpperCase();
+		if (OperationState.YES.equals(emergency)) {
+			createDocument = true;
+		} else if (OperationState.NO.equals(emergency) && OperationState.YES.equals(dispatch)) {
 			createDocument = true;
 		}
 
-		System.out.println("createDocument:" + createDocument);
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -72,9 +77,8 @@ public class GenRegOpt {
 			String state = "01";
 			if (createDocument) {
 				state = "02";
-				if ("Y".equals(emergency)) state = "03";
+				if (OperationState.YES.equals(emergency) || (OperationState.NO.equals(emergency) && OperationState.YES.equals(dispatch))) state = "03";
 			}
-			System.out.println("state:" + state);
 			String designedOptCode = basOperdefs.get(random).getOperdefId();
 			String designedOptName = basOperdefs.get(random).getName();
 			String diagnosisCode = basDiagnosedefs.get(random).getDiagDefId();
@@ -124,7 +128,7 @@ public class GenRegOpt {
 			basRegOpt.setCreateTime(DateUtils.formatDateTime(new Date()));
 			basRegOpt.setCutLevel(Integer.valueOf(BaseDataService.getRandom(1, 4)));
 			basRegOpt.setOptLevel(optLevel);
-			basRegOpt.setEmergency(emergency == "Y" ? 1 : 0);
+			basRegOpt.setEmergency(emergency == OperationState.YES ? 1 : 0);
 			basRegOpt.setIsLocalAnaes(0);
 			basRegOpt.setDesignedAnaesMethodCode(designedAnaesMethodCode);
 			basRegOpt.setDesignedAnaesMethodName(designedAnaesMethodName);
@@ -141,7 +145,7 @@ public class GenRegOpt {
 			basDispatch.setRegOptId(id);
 			basDispatch.setBeid(beid);
 			//如果是创建急诊手术,默认安排麻醉医生和护士;
-			if ("Y".equals(emergency)) {
+			if (OperationState.YES.equals(emergency) || (OperationState.NO.equals(emergency) && OperationState.YES.equals(dispatch))) {
 				List<BasUser> anaesDoc = BaseDataService.searchBasUserList(UserRoleState.ANAES_DIRECTOR);
 				int r6 = random1.nextInt(anaesDoc.size());
 				String anaesDocName = anaesDoc.get(r6).getUserName();
@@ -150,9 +154,16 @@ public class GenRegOpt {
 				List<BasUser> headNurse = BaseDataService.searchBasUserList(UserRoleState.HEAD_NURSE);
 				int r7 = random1.nextInt(headNurse.size());
 				String headNurseName = headNurse.get(r7).getUserName();
+				int r8 = random1.nextInt(pacTypes.size());
 				basDispatch.setCircunurseId1(headNurseName);
-				basDispatch.setOperRoomId("2");
-				basDispatch.setPcs("1");
+				List<BasOperroom> basOperrooms = BaseDataService.searchBasOperroomList(operroomId);
+				if (basOperrooms.size() == 0) {
+					System.out.println("该局点没有第" + operroomId + "手术室,默认安排第一手术室\n");
+					basDispatch.setOperRoomId("1");
+				} else {
+					basDispatch.setOperRoomId(operroomId);
+				}
+				basDispatch.setPcs(pacTypes.get(r8).getCodeValue());
 				basDispatch.setIsHold(0);
 			}
 			BasDispatchDao.insert(basDispatch);
@@ -175,18 +186,19 @@ public class GenRegOpt {
 		if (params != null && params.length > 0) {
 			int total = Integer.parseInt(params[0]);
 			String emergency = params[1];
+			String dispatch = params[2];
+			String operroomId = params[3];
 			if (total > 50) {
 				System.out.println("生成的患者数不能超过50个！");
 				return;
 			}
 			String code = BaseDataService.getCurBasBusEntity().getCode();
 			if (BeidState.SYBX.equals(code) || BeidState.YXYY.equals(code) || BeidState.QNZZYYY.equals(code)) {
-				insertSql(total, emergency, false);
+				insertSql(total, emergency, dispatch, operroomId, false);
 			}else if (BeidState.SYZXYY.equals(code) || BeidState.LLZYYY.equals(code) || BeidState.CSHTYY.equals(code) || BeidState.LYRM.equals(code)) {
-				insertSql(total, emergency, true);
+				insertSql(total, emergency, dispatch, operroomId, true);
 			}
 		}else {
-			insertSql(1, "Y", false);
 			System.out.println("请传入参数....");
 		}
 	}
