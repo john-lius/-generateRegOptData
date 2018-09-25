@@ -11,4 +11,6 @@ public class DocAccedeSql {
 			+ "centralCatheter, spinalPuncture, cureContent, specialCase, otherCase, "
 			+ "laryngeal,brachialPlexusBlock, anaesAssistMeasure)"
 			+ "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	public static final String deleteByRegOptId = "DELETE FROM doc_accede WHERE regOptId IN(SELECT t.regOptId FROM bas_reg_opt t WHERE t.beid = ? AND t.name LIKE ?)";
 }
