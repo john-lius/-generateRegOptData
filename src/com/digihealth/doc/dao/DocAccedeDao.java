@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.digihealth.basedata.service.BaseDataService;
-import com.digihealth.basedata.sql.BasAnaesMedicineLoseRecordSql;
 import com.digihealth.doc.entity.DocAccede;
 import com.digihealth.doc.sql.DocAccedeSql;
 import com.digihealth.utils.ConnectionManager;
@@ -84,7 +83,7 @@ public class DocAccedeDao {
 		}
 	}
 
-	public static void deleteByRegOptId() {
+	public static void deleteByRegOptId(String name) {
 		String beid = BaseDataService.getCurBasBusEntity().getBeid();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -93,7 +92,7 @@ public class DocAccedeDao {
 			conn = ConnectionManager.getAISDEVConnection();
 			pstmt = conn.prepareStatement(DocAccedeSql.deleteByRegOptId);
 			pstmt.setString(1, beid);
-			pstmt.setString(2, "%" + "GS4" + "%");
+			pstmt.setString(2, "%" + name + "%");
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
