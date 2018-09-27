@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.digihealth.basedata.service.BaseDataService;
 import com.digihealth.doc.entity.DocAnaesSummary;
 import com.digihealth.doc.sql.DocAnaesSummarySql;
 import com.digihealth.utils.ConnectionManager;
@@ -64,5 +65,27 @@ public class DocAnaesSummaryDao {
 			}
 		}
 		return lst;
+	}
+
+	public static void deleteByRegOptId(String name) {
+		String beid = BaseDataService.getCurBasBusEntity().getBeid();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(DocAnaesSummarySql.deleteByRegOptId);
+			pstmt.setString(1, beid);
+			pstmt.setString(2, "%" + name + "%");
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("----------DocAnaesSummaryDao-deleteByRegOptId----------" + e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
