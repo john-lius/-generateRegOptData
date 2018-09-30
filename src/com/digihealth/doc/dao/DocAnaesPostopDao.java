@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import com.digihealth.basedata.service.BaseDataService;
 import com.digihealth.doc.entity.DocAnaesPostop;
-import com.digihealth.doc.sql.DocAccedeInformedSql;
 import com.digihealth.doc.sql.DocAnaesPostopSql;
 import com.digihealth.utils.ConnectionManager;
 

@@ -129,6 +129,9 @@ public class CreateDocument {
 				preVisit.setProcessState("END");
 			}else if (BeidState.LLZYYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
 				preVisit.setAsaE("1");
+				preVisit.setProcessState("END");
+			}else {
+				preVisit.setProcessState("END");
 			}
 			DocPreVisitDao dao = new DocPreVisitDao();
 			dao.insert(preVisit);
@@ -160,7 +163,10 @@ public class CreateDocument {
 			accede.setProcessState("NO_END");
 			if (BeidState.LLZYYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
 				accede.setSelected("0,0,0,0,0,0,0,0,0,1,1,1,1,1,1");
+				accede.setProcessState("END");
 			} else if (BeidState.SYBX.equals(BaseDataService.getCurBasBusEntity().getCode())) {
+				accede.setProcessState("END");
+			} else {
 				accede.setProcessState("END");
 			}
 			DocAccedeDao dao = new DocAccedeDao();

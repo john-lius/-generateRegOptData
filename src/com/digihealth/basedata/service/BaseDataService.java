@@ -21,7 +21,6 @@ import com.digihealth.basedata.entity.BasOperroom;
 import com.digihealth.basedata.entity.BasRegion;
 import com.digihealth.basedata.entity.BasUser;
 import com.digihealth.basedata.sql.Sql;
-import com.digihealth.basedata.state.UserRoleState;
 import com.digihealth.utils.ConnectionManager;
 
 /**

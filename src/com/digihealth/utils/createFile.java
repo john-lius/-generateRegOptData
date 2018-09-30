@@ -121,4 +121,8 @@ public class createFile {
         return bool;
     }
 
+    public static void main(String[] args) {
+    	String pinyin = "xx895fsbcfhkyC58D+·É»¢xljc";
+    	System.out.println(pinyin.replaceAll("[^a-zA-Z]", ""));
+	}
 }

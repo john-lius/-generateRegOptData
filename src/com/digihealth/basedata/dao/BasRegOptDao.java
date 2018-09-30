@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.digihealth.basedata.entity.BasRegOpt;
+import com.digihealth.basedata.service.BaseDataService;
+import com.digihealth.basedata.sql.BasRegOptSql;
 import com.digihealth.basedata.sql.Sql;
 import com.digihealth.utils.ConnectionManager;
 
@@ -96,5 +98,29 @@ public class BasRegOptDao {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static int deleteByRegOptId(String name) {
+		String beid = BaseDataService.getCurBasBusEntity().getBeid();
+		int deleteCount = 0;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(BasRegOptSql.deleteByRegOptId);
+			pstmt.setString(1, beid);
+			pstmt.setString(2, "%" + name + "%");
+			deleteCount = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("----------BasRegOptDao-deleteByRegOptId----------" + e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return deleteCount;
 	}
 }
