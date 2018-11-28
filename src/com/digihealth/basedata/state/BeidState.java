@@ -29,4 +29,8 @@ public class BeidState {
 	 * 耒阳市人民医院
 	 */
 	public static String LYRM = "lyrm";
+	/**
+	 * 南华大学附属南华医院
+	 */
+	public static String NHYY = "nhyy";
 }

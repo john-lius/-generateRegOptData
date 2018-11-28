@@ -1,5 +1,9 @@
 package com.digihealth.basedata.service;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import com.digihealth.basedata.dao.BasAnaesMedicineLoseRecordDao;
 import com.digihealth.basedata.dao.BasAnaesMedicineRetreatRecordDao;
 import com.digihealth.basedata.dao.BasAnaesMonitorConfigDao;
@@ -123,6 +127,7 @@ import com.digihealth.evt.dao.EvtSpecialMaterialEventDao;
 import com.digihealth.sco.dao.ScoParsRecordDao;
 
 public class CleanRegOpt {
+    private static String path = "D:\\file\\";
 
 	public static void clean(String name) {
 		BasAnaesMedicineLoseRecordDao.deleteByRegOptId(name);
@@ -250,13 +255,41 @@ public class CleanRegOpt {
 		System.out.println("成功删除" + deleteCount + "个患者信息.");
 	}
 
+	public static void cleanBySql(String date) {
+		StringBuilder result = new StringBuilder();
+		File file = new File(path + "删除患者信息.sql");
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));// 构造一个BufferedReader类来读取文件
+			String s = null;
+			while ((s = br.readLine()) != null) {// 使用readLine方法，一次读一行
+				result.append(System.lineSeparator() + s);
+			}
+			br.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String rs = result.toString();
+		String[] sql = rs.split(";");
+		for (int i = 1; i < sql.length; i++) {
+			System.out.println(sql[i]);
+			BasRegOptDao.deleteBySql(sql[i], date);
+		}
+	}
+
 	public static void main(String[] params) {
 		if (params != null && params.length > 0) {
-			String name = params[0];
+			String type = params[0];
+			String value = params[1];
 			System.out.println("当前局点:" + BaseDataService.getCurBasBusEntity().getName() + "\n");
-			clean(name);
+			if ("1".equals(type)) {
+				clean(value);
+			} else if ("2".equals(type)) {
+				cleanBySql(value);
+			} else {
+				System.out.println("无效的参数");
+			}
 		} else {
-			System.out.println("请输入患者姓名");
+			System.out.println("请输入参数");
 		}
 	}
 

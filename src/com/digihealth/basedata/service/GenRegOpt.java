@@ -41,14 +41,18 @@ import com.digihealth.utils.RandomName;
 public class GenRegOpt {
 
 	@SuppressWarnings("static-access")
-	public static String insertSql(int total, String emergency, int isLocalAnaes, String dispatch, String operroomId, boolean createDocument) throws Exception {
+	public static String insertSql(int total, String emergency, String isLocalAnaes, String dispatch, String operroomId, boolean createDocument) throws Exception {
 		String sql = "";
 		String beid = BaseDataService.getCurBasBusEntity().getBeid();
 		String patientName = "";  //患者姓名
 		String operaDate = DateUtils.DateToString(new Date());
+		int localAnaes = 0;
+		if (OperationState.YES.equals(isLocalAnaes)) {
+			localAnaes = 1;
+		}
 		List<BasOperDef> basOperdefs = BaseDataService.searchBasOperdefList();
 		List<BasDiagnosedef> basDiagnosedefs = BaseDataService.searchBasDiagnosedefList();
-		List<BasAnaesMethod> basAnaesMethods = BaseDataService.searchBasAnaesMethodList();
+		List<BasAnaesMethod> basAnaesMethods = BaseDataService.searchBasAnaesMethodList(localAnaes);
 		List<BasOperationPeople> basOperationPeoples = BaseDataService.searchBasOperationPeopleList();
 		List<BasDept> basDepts = BaseDataService.searchBasDeptList();
 		List<BasRegion> basRegions = BaseDataService.searchBasRegionList();
@@ -135,8 +139,12 @@ public class GenRegOpt {
 			basRegOpt.setCreateTime(DateUtils.formatDateTime(new Date()));
 			basRegOpt.setCutLevel(Integer.valueOf(BaseDataService.getRandom(1, 4)));
 			basRegOpt.setOptLevel(optLevel);
-			basRegOpt.setEmergency(emergency == OperationState.YES ? 1 : 0);
-			basRegOpt.setIsLocalAnaes(0);
+			basRegOpt.setEmergency(OperationState.YES.equals(emergency) ? 1 : 0);
+			if (BeidState.SYBX.equals(BaseDataService.getCurBasBusEntity().getCode())) {
+				basRegOpt.setIsLocalAnaes(0);
+			} else {
+				basRegOpt.setIsLocalAnaes(localAnaes);
+			}
 			basRegOpt.setDesignedAnaesMethodCode(designedAnaesMethodCode);
 			basRegOpt.setDesignedAnaesMethodName(designedAnaesMethodName);
 			basRegOpt.setOperatorId(operatorId);
@@ -145,6 +153,16 @@ public class GenRegOpt {
 			basRegOpt.setAssistantName("");
 			basRegOpt.setState(state);
 			basRegOpt.setCostsettlementState("0");
+			//Origin (4.0版航天医院用来标示 手术类型 0 择期 1非择期 2住院急诊 3急诊)
+			if (BeidState.CSHTYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
+				if (OperationState.YES.equals(emergency)) {
+					basRegOpt.setOrigin(3);
+				} else {
+					basRegOpt.setOrigin(0);
+				}
+			} else {
+				basRegOpt.setOrigin(null);
+			}
 			basRegOpt.setBeid(beid);
 			BasRegOptDao.insert(basRegOpt);
 
@@ -313,7 +331,7 @@ public class GenRegOpt {
 		if (params != null && params.length > 0) {
 			int total = Integer.parseInt(params[0]);
 			String emergency = params[1];
-			int isLocalAnaes = Integer.parseInt(params[2]);
+			String isLocalAnaes = params[2];
 			String dispatch = params[3];
 			String operroomId = params[4];
 			if (total > 50) {
