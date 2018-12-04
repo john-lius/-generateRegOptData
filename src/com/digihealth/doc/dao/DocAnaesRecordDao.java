@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
+import com.digihealth.basedata.service.BaseDataService;
 import com.digihealth.doc.entity.DocAnaesRecord;
 import com.digihealth.doc.sql.DocAnaesRecordSql;
 import com.digihealth.utils.ConnectionManager;
@@ -66,6 +66,56 @@ public class DocAnaesRecordDao {
 	        pstmt.executeUpdate();
 		} catch (Exception e) {
 			System.out.println("执行insert语句出现异常(DocAnaesRecordDao)：" + e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public DocAnaesRecord queryByRegOptId(String regOptId) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		DocAnaesRecord entity = new DocAnaesRecord();
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(DocAnaesRecordSql.queryByRegOptId);
+			pstmt.setString(1, regOptId);
+			rs = pstmt.executeQuery();
+            if (null == rs) return null;
+            while (rs.next()) {
+				entity.setAnaRecordId(rs.getString("anaRecordId"));
+				entity.setRegOptId(rs.getString("regOptId"));
+			}
+		} catch (Exception e) {
+			System.out.println("执行查询语句出现异常(DocAnaesRecordDao)："
+					+ e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return entity;
+	}
+
+	public static void deleteByRegOptId(String name) {
+		String beid = BaseDataService.getCurBasBusEntity().getBeid();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(DocAnaesRecordSql.deleteByRegOptId);
+			pstmt.setString(1, beid);
+			pstmt.setString(2, "%" + name + "%");
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("----------DocAnaesRecordDao-deleteByRegOptId----------" + e.getMessage());
 		} finally {
 			try {
 				ConnectionManager.close(conn, pstmt, rs);

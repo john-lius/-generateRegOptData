@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import com.digihealth.basedata.service.BaseDataService;
 import com.digihealth.doc.entity.DocAnalgesicInformedConsent;
-import com.digihealth.doc.sql.DocAnaesSummarySql;
 import com.digihealth.doc.sql.DocAnalgesicInformedConsentSql;
 import com.digihealth.utils.ConnectionManager;
 

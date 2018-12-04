@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -121,4 +122,25 @@ public class createFile {
         return bool;
     }
 
+    public static void main(String[] args) {
+//    	String pinyin = "xx895fsbcfhkyC58D+飞虎xljc";
+//    	System.out.println(pinyin.replaceAll("[^a-zA-Z]", ""));
+    	StringBuilder result = new StringBuilder();
+    	File file = new File(path + "删除患者信息.sql");
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(file));//构造一个BufferedReader类来读取文件
+            String s = null;
+            while((s = br.readLine())!=null){//使用readLine方法，一次读一行
+                result.append(System.lineSeparator()+s);
+            }
+            br.close();    
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        String rs = result.toString();
+        String[] sql = rs.split(";");
+        for (int i=1; i<sql.length; i++) {
+        	System.out.println(sql[i]);
+		}
+	}
 }

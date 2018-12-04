@@ -31,6 +31,10 @@ public class Sql {
 	 */
 	public static final String SEARCHBASANAESMETHOD = "select a.* from bas_anaes_method a where a.beid = ? and a.isLocalAnaes = ? and a.isValid = ? order by a.name ASC limit 0, 200";
 	/**
+	 * 查询麻醉方法信息(本溪)
+	 */
+	public static final String SEARCHBASANAESMETHODSYBX = "select a.* from bas_anaes_method a where a.beid = ? and a.cate2 = ? and a.isValid = ? order by a.name ASC limit 0, 200";
+	/**
 	 * 查询手术医生信息
 	 */
 	public static final String SEARCHBASOPERATIONPEOPLE = "select a.* from bas_operation_people a where a.beid = ? and a.enable = 1 order by a.name ASC limit 0, 200";
@@ -49,7 +53,7 @@ public class Sql {
 	/**
 	 * 新增患者基本信息
 	 */
-	public static final String INSERTBASREGOPT = "INSERT INTO bas_reg_opt (regOptId, NAME, sex, age, ageMon, ageDay, medicalType, hid, bed, height, weight, regionId, regionName, deptId, deptName, designedOptName, designedOptCode, diagnosisName, diagnosisCode, operaDate, createUser, createTime, cutLevel, optLevel, emergency, isLocalAnaes, designedAnaesMethodName, designedAnaesMethodCode, operatorId, operatorName, assistantId, assistantName, state, costsettlementState, beid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	public static final String INSERTBASREGOPT = "INSERT INTO bas_reg_opt (regOptId, NAME, sex, age, ageMon, ageDay, medicalType, hid, bed, height, weight, regionId, regionName, deptId, deptName, designedOptName, designedOptCode, diagnosisName, diagnosisCode, operaDate, createUser, createTime, cutLevel, optLevel, emergency, isLocalAnaes, designedAnaesMethodName, designedAnaesMethodCode, operatorId, operatorName, assistantId, assistantName, state, costsettlementState, origin, beid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	/**
 	 * 新增排程信息
 	 */
