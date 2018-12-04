@@ -153,7 +153,7 @@ public class GenRegOpt {
 			basRegOpt.setAssistantName("");
 			basRegOpt.setState(state);
 			basRegOpt.setCostsettlementState("0");
-			//Origin (4.0版航天医院用来标示 手术类型 0 择期 1非择期 2住院急诊 3急诊)
+			//Origin (4.0版航天医院用来标示 手术类型 0 择期 1非择期 2住院急诊 3急诊) 
 			if (BeidState.CSHTYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
 				if (OperationState.YES.equals(emergency)) {
 					basRegOpt.setOrigin(3);
