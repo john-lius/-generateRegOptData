@@ -1,8 +1,10 @@
 package com.digihealth.basedata.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import com.digihealth.basedata.dao.BasDao;
 import com.digihealth.basedata.state.BeidState;
 import com.digihealth.basedata.state.OperationState;
 import com.digihealth.doc.dao.DocAccedeDao;
@@ -98,6 +100,7 @@ import com.digihealth.doc.entity.DocSpinalCanalPuncture;
 import com.digihealth.doc.entity.DocTransferConnectRecord;
 import com.digihealth.doc.entity.DocVeinAccede;
 import com.digihealth.utils.GenerateSequenceUtil;
+import com.digihealth.utils.ParseMySql;
 
 /**
  * 创建文书
@@ -559,6 +562,24 @@ public class CreateDocument {
 					.generateSequenceNo());
 			DocPatPrevisitRecordDao docPatPrevisitRecordDao = new DocPatPrevisitRecordDao();
 			docPatPrevisitRecordDao.insert(docPatPrevisitRecord);
+		}
+
+		DocAnaesQualityControl docAnaesQualityControl = new DocAnaesQualityControl();
+		docAnaesQualityControl.setRegOptId(regOptId);
+		docAnaesQualityControl.setId(GenerateSequenceUtil.generateSequenceNo());
+		DocAnaesQualityControlDao docAnaesQualityControlDao = new DocAnaesQualityControlDao();
+		docAnaesQualityControlDao.insert(docAnaesQualityControl);
+	}
+
+	public static void createByParseMySql(String regOptId) {
+		String initTable = searchAllTables().toString();
+		List<Map<String, Object>> initTables = ParseMySql.initTables();
+		BasDao dao = new BasDao();
+		for (Map<String, Object> map : initTables) {
+			if (initTable.contains(map.get("table").toString())) {
+				String sql = "INSERT INTO " + map.get("table") + "(" + map.get("primaryKey") + ", regOptId, processState) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + regOptId + "', 'NO_END')";
+				dao.insert(sql);
+			}
 		}
 
 		DocAnaesQualityControl docAnaesQualityControl = new DocAnaesQualityControl();

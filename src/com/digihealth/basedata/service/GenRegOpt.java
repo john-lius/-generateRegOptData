@@ -153,7 +153,7 @@ public class GenRegOpt {
 			basRegOpt.setAssistantName("");
 			basRegOpt.setState(state);
 			basRegOpt.setCostsettlementState("0");
-			//Origin (4.0版航天医院用来标示 手术类型 0 择期 1非择期 2住院急诊 3急诊) 
+			//Origin (4.0版航天医院用来标示 手术类型 0 择期 1非择期 2住院急诊 3急诊)
 			if (BeidState.CSHTYY.equals(BaseDataService.getCurBasBusEntity().getCode())) {
 				if (OperationState.YES.equals(emergency)) {
 					basRegOpt.setOrigin(3);
@@ -200,7 +200,8 @@ public class GenRegOpt {
 			BasDispatchDao.insert(basDispatch);
 			if (createDocument) {
 				CreateDocument document = new CreateDocument();
-				document.create(id);
+//				document.create(id);
+				document.createByParseMySql(id);
 			}
 			if (basDispatch.getIsHold() != null && basDispatch.getIsHold() == 0) {
 				DocAnaesRecordDao docAnaesRecordDao = new DocAnaesRecordDao();
@@ -342,7 +343,7 @@ public class GenRegOpt {
 			GenRegOpt gen = new GenRegOpt();
 			if (BeidState.SYBX.equals(code) || BeidState.YXYY.equals(code) || BeidState.QNZZYYY.equals(code)) {
 				gen.insertSql(total, emergency, isLocalAnaes, dispatch, operroomId, false);
-			}else if (BeidState.SYZXYY.equals(code) || BeidState.LLZYYY.equals(code) || BeidState.CSHTYY.equals(code) || BeidState.NHYY.equals(code) || BeidState.LYRM.equals(code)) {
+			}else if (BeidState.SYZXYY.equals(code) || BeidState.LLZYYY.equals(code) || BeidState.CSHTYY.equals(code) || BeidState.NHYY.equals(code) || BeidState.LYRM.equals(code) || BeidState.ZDBY.equals(code) || BeidState.RJXRMYY.equals(code)) {
 				gen.insertSql(total, emergency, isLocalAnaes, dispatch, operroomId, true);
 			}
 		}else {

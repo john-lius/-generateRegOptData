@@ -33,4 +33,12 @@ public class BeidState {
 	 * 南华大学附属南华医院
 	 */
 	public static String NHYY = "nhyy";
+	/**
+	 * 中山大学附属第八医院
+	 */
+	public static String ZDBY = "zdby";
+	/**
+	 * 榕江县人民医院
+	 */
+	public static String RJXRMYY = "rjxrmyy";
 }

@@ -14,6 +14,10 @@ public class ConnectionManager {
 	private static String JDBC_SQLSERVER_URL = Global.getConfig("jdbc.url");
 	private static String JDBC_SQLSERVER_USERNAME = Global.getConfig("jdbc.username");
 	private static String JDBC_SQLSERVER_PASSWORD = Global.getConfig("jdbc.password");
+	/**
+	 * 当前数据库版本(数据库名)
+	 */
+	public static String DATABASENAME = Global.getConfig("version");
 
 	/**
 	 * 从连接池拿Connection
