@@ -5,7 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.digihealth.basedata.entity.BasDept;
 import com.digihealth.basedata.entity.BasRegOpt;
 import com.digihealth.basedata.service.BaseDataService;
 import com.digihealth.basedata.sql.BasRegOptSql;
@@ -13,6 +16,39 @@ import com.digihealth.basedata.sql.Sql;
 import com.digihealth.utils.ConnectionManager;
 
 public class BasRegOptDao {
+	
+	public List<BasRegOpt> searchRegOptByName(String regOptName) {
+		List<BasRegOpt> list = new ArrayList<>();
+		String beid = BaseDataService.getCurBasBusEntity().getBeid();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = ConnectionManager.getAISDEVConnection();
+			pstmt = conn.prepareStatement(BasRegOptSql.searchByRegOptName);
+			pstmt.setString(1, beid);
+			pstmt.setString(2, "%" + regOptName + "%");
+			rs = pstmt.executeQuery();
+            if (null == rs) return null;
+            while (rs.next()) {
+            	BasRegOpt entity = new BasRegOpt();
+				entity.setRegOptId(rs.getString("regOptId"));
+				entity.setName(rs.getString("name"));
+				entity.setState(rs.getString("state"));
+				entity.setBeid(rs.getString("beid"));
+				list.add(entity);
+			}
+		} catch (Exception e) {
+			System.out.println("------searchRegOptByNameException------" + e.getMessage());
+		} finally {
+			try {
+				ConnectionManager.close(conn, pstmt, rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
 
 	public static void insert(BasRegOpt entity) {
 		Connection conn = null;

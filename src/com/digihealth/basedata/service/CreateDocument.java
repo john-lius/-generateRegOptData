@@ -573,12 +573,23 @@ public class CreateDocument {
 
 	public static void createByParseMySql(String regOptId) {
 		String initTable = searchAllTables().toString();
+		initTable = initTable + "doc_anaes_before_safe_check;" + "doc_oper_before_safe_check;" + "doc_exit_oper_safe_check;";
 		List<Map<String, Object>> initTables = ParseMySql.initTables();
 		BasDao dao = new BasDao();
 		for (Map<String, Object> map : initTables) {
 			if (initTable.contains(map.get("table").toString())) {
-				String sql = "INSERT INTO " + map.get("table") + "(" + map.get("primaryKey") + ", regOptId, processState) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + regOptId + "', 'NO_END')";
+				String primaryKey = GenerateSequenceUtil.generateSequenceNo();
+				String sql = "INSERT INTO " + map.get("table") + "(" + map.get("primaryKey") + ", regOptId, processState) VALUES ('" + primaryKey + "', '" + regOptId + "', 'NO_END')";
 				dao.insert(sql);
+				//新增麻醉总结相关表数据
+				if ("doc_anaes_summary".equals(map.get("table").toString())) {
+					dao.insert("INSERT INTO doc_anaes_summary_allergic_reaction (anaSumAllReaId, anaSumId) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + primaryKey + "')");
+					dao.insert("INSERT INTO doc_anaes_summary_appendix_canal (anaSumAppCanId, anaSumId) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + primaryKey + "')");
+					dao.insert("INSERT INTO doc_anaes_summary_appendix_gen (anaSumAppGenId, anaSumId) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + primaryKey + "')");
+					dao.insert("INSERT INTO doc_anaes_summary_appendix_visit (anesSumVisId, anaSumId) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + primaryKey + "')");
+					dao.insert("INSERT INTO doc_anaes_summary_venipuncture (anesSumVenId, anaSumId) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + primaryKey + "')");
+					dao.insert("INSERT INTO doc_spinal_canal_puncture (spinalCanalId, anaSumId) VALUES ('" + GenerateSequenceUtil.generateSequenceNo() + "', '" + primaryKey + "')");
+				}
 			}
 		}
 
