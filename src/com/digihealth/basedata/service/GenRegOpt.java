@@ -25,6 +25,7 @@ import com.digihealth.basedata.entity.BasOperroom;
 import com.digihealth.basedata.entity.BasRegOpt;
 import com.digihealth.basedata.entity.BasRegion;
 import com.digihealth.basedata.entity.BasUser;
+import com.digihealth.basedata.enums.Enum;
 import com.digihealth.basedata.state.BeidState;
 import com.digihealth.basedata.state.OperationState;
 import com.digihealth.basedata.state.UserRoleState;
@@ -33,6 +34,7 @@ import com.digihealth.doc.entity.DocAnaesRecord;
 import com.digihealth.evt.dao.EvtParticipantDao;
 import com.digihealth.evt.entity.EvtParticipant;
 import com.digihealth.evt.service.EvtParticipantService;
+import com.digihealth.utils.Base64Utils;
 import com.digihealth.utils.ConnectionManager;
 import com.digihealth.utils.DateUtils;
 import com.digihealth.utils.GenerateSequenceUtil;
@@ -74,7 +76,6 @@ public class GenRegOpt {
 		conn = ConnectionManager.getAISDEVConnection();
 		for(int i=1; i<=total; i++) {
 			String id = GenerateSequenceUtil.generateSequenceNo();
-			Map<String, String> nameMap = RandomName.getAddress();
 			int random = (int)(Math.random() * 100);
 			Random random1 = new Random();
 			int r = random1.nextInt(basAnaesMethods.size());
@@ -86,12 +87,16 @@ public class GenRegOpt {
 			int r4 = random1.nextInt(costTypes.size());
 			int r5 = random1.nextInt(operatLevels.size());
 			String state = "01";
+			String sex = "男";
 			if (createDocument) {
 				state = "02";
 				if (OperationState.YES.equals(emergency) || (OperationState.NO.equals(emergency) && OperationState.YES.equals(dispatch))) state = "03";
 			}
 			String designedOptCode = basOperdefs.get(random).getOperdefId();
 			String designedOptName = basOperdefs.get(random).getName();
+			if (designedOptName.contains(Base64Utils.decode(Enum.YD)) || designedOptName.contains(Base64Utils.decode(Enum.YDD)) || designedOptName.contains(Base64Utils.decode(Enum.ZG)) || designedOptName.contains(Base64Utils.decode(Enum.Y)) || designedOptName.contains(Base64Utils.decode(Enum.R)) || designedOptName.contains(Base64Utils.decode(Enum.GJ))) {
+				sex = "女";
+			}
 			String diagnosisCode = basDiagnosedefs.get(random).getDiagDefId();
 			String diagnosisName = basDiagnosedefs.get(random).getName();
 			String operatorId = basOperationPeoples.get(random).getOperatorId();
@@ -104,6 +109,7 @@ public class GenRegOpt {
 				regionId = basRegions.get(r3).getRegionId();
 				regionName = basRegions.get(r3).getName();
 			}
+			Map<String, String> nameMap = RandomName.getAddress(sex);
 			String deptId = basDepts.get(r2).getDeptId();
 			String deptName = basDepts.get(r2).getName();
 			String medicalType = costTypes.get(r4).getCodeName();
@@ -117,7 +123,7 @@ public class GenRegOpt {
 			BasRegOpt basRegOpt = new BasRegOpt();
 			basRegOpt.setRegOptId(id);
 			basRegOpt.setName(nameMap.get("name"));
-			basRegOpt.setSex(nameMap.get("sex"));
+			basRegOpt.setSex(sex);
 			basRegOpt.setAge(random);
 			basRegOpt.setAgeMon(random1.nextInt(11));
 			basRegOpt.setAgeDay(random1.nextInt(365));
@@ -349,6 +355,7 @@ public class GenRegOpt {
 		}else {
 			System.out.println("请传入参数....");
 		}
+		
 	}
 
 }

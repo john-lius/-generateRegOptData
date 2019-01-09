@@ -62,13 +62,13 @@ public class RandomName {
 	 */
 	private static String name_sex = "";
 
-	private static String getChineseName() {
+	private static String getChineseName(String sexd) {
 		int index = getNum(0, firstName.length() - 1);
 		String first = firstName.substring(index, index + 1);
-		int sex = getNum(0, 1);
+//		int sex = getNum(0, 1);
 		String str = boy;
 		int length = boy.length();
-		if (sex == 0) {
+		if (/*sex == 0 && */sexd == "Ů") {
 			str = girl;
 			length = girl.length();
 			name_sex = "Ů";
@@ -104,14 +104,18 @@ public class RandomName {
 	 * 
 	 * @return
 	 */
-	public static Map<String, String> getAddress() {
+	public static Map<String, String> getAddress(String sex) {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("name", getChineseName());
+		map.put("name", getChineseName(sex));
 		map.put("sex", name_sex);
 		map.put("road", getRoad());
 		map.put("tel", getTel());
 		map.put("email", getEmail(6, 9));
 		return map;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(getAddress("Ů"));
 	}
 
 }

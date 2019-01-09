@@ -577,9 +577,16 @@ public class CreateDocument {
 		List<Map<String, Object>> initTables = ParseMySql.initTables();
 		BasDao dao = new BasDao();
 		for (Map<String, Object> map : initTables) {
-			if (initTable.contains(map.get("table").toString())) {
+			//PACU表不能初始化,术中出室去向选了PACU才创建表数据;
+			if (initTable.contains(map.get("table").toString()) && !"doc_anaes_pacu_rec".equals(map.get("table").toString())) {
 				String primaryKey = GenerateSequenceUtil.generateSequenceNo();
-				String sql = "INSERT INTO " + map.get("table") + "(" + map.get("primaryKey") + ", regOptId, processState) VALUES ('" + primaryKey + "', '" + regOptId + "', 'NO_END')";
+				String field = "";
+				String value = "";
+				if ("doc_accede".equals(map.get("table").toString())) {
+					field = "flag,";
+					value = "1,";
+				}
+				String sql = "INSERT INTO " + map.get("table") + "(" + map.get("primaryKey") + ", regOptId, " + field + "processState) VALUES ('" + primaryKey + "', '" + regOptId + "', " + value + "'NO_END')";
 				dao.insert(sql);
 				//新增麻醉总结相关表数据
 				if ("doc_anaes_summary".equals(map.get("table").toString())) {
